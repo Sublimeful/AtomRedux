@@ -1,0 +1,392 @@
+@import url('https://fonts.googleapis.com/css?family=Lato&display=swap');
+
+* {
+  box-sizing: border-box
+}
+
+:root {
+  --primary-color: #2e2d2c;
+  --secondary-color: #1c1b1b;
+  --text-color: white;
+  
+}
+
+body {
+  margin: 0;
+  height: 100vh;
+  font-family: 'Lato', sans-serif;
+  background-image: linear-gradient(0deg, var(--secondary-color) 23.8%, var(--primary-color) 92%);
+}
+
+/* Style the search box inside the navigation bar */
+.topnav {
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: center;
+}
+
+.topnav input[type=text] {
+  padding: 6px;
+  border: none;
+  font-size: 17px;
+  background-color: var(--secondary-color);
+  color: white;
+}
+
+.topnav input[type=text]:focus {
+  outline: none;
+}
+
+#items {
+  height: calc(90vh - 110px);
+  overflow-y: auto;
+}
+
+.item
+{
+  width: 100%;
+  height: 94px;
+  display: flex;
+}
+
+.item svg
+{
+  align-self: center;
+  height: 3rem;
+  margin: 0 15px 0 15px;
+}
+
+.video-thumb
+{
+  width: 168px;
+  height: 94px;
+  cursor: pointer;
+  flex: 1;
+}
+
+.video-title
+{
+  cursor: pointer;
+  margin: 0 0 0 10px;
+  overflow: hidden;
+  color: var(--text-color);
+  flex: 2;
+}
+
+html {
+  background-color: #181a18;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loader {
+  border: 16px solid #f3f3f3; /* Light grey */
+  border-top: 16px solid orange;
+  border-radius: 50%;
+  animation: spin 2s linear infinite;
+  width: 1rem;
+  height: 1rem;
+  align-self: center;
+  margin: 0 15px 0 15px;
+  box-sizing: content-box;
+}
+
+/* The sidebar menu */
+.sidebar {
+  height: 100%; /* 100% Full-height */
+  width: 0; /* 0 width - change this with JavaScript */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Stay on top */
+  top: 0;
+  left: 0;
+  background-color: #111; /* Black*/
+  overflow-x: hidden; /* Disable horizontal scroll */
+  padding-top: 60px; /* Place content 60px from the top */
+  transition: 0.5s; /* 0.5 second transition effect to slide in the sidebar */
+}
+
+/* The sidebar links */
+.sidebar a {
+  padding: 8px 8px 8px 32px;
+  text-decoration: none;
+  font-size: 25px;
+  color: #818181;
+  display: block;
+  transition: 0.3s;
+}
+
+/* When you mouse over the navigation links, change their color */
+.sidebar a:hover {
+  color: #f1f1f1;
+}
+
+/* Position and style the close button (top right corner) */
+.sidebar .closebtn {
+  position: absolute;
+  top: 0;
+  right: 25px;
+  font-size: 36px;
+  margin-left: 50px;
+}
+
+/* The button used to open the sidebar */
+.openbtn {
+  font-size: 20px;
+  cursor: pointer;
+  background-color: #111;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  float: left;
+  width: 3rem;
+  height: 3rem;
+}
+
+.openbtn:hover {
+  background-color: #444;
+}
+
+/* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
+@media screen and (max-height: 450px) {
+  .sidebar {padding-top: 15px;}
+  .sidebar a {font-size: 18px;}
+}
+
+.center {
+  top: calc(50% - 4.5rem);
+  left: calc(50% - 4.5rem);
+  margin: 0 0 0 0;
+  width: 9rem;
+  height: 9rem;
+  position: relative;
+}
+
+/* Player */
+
+.player {
+  display: flex;
+  justify-content: center;
+  border-radius: 15px 15px 0 0;
+  width: 25%;
+}
+
+.player-container {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  bottom: 10px;
+  position: fixed;
+}
+
+.img-container {
+  position: relative;
+  min-width: 110px;
+  width: 110px;
+  height: 110px;
+}
+
+.img-container::after {
+  content:'';
+  position: absolute;
+  width: calc(110px + 5px);
+  height: calc(110px + 5px);
+  border-radius: 50%;
+  background-color: white;
+  transform: translate(calc(-5px/2), calc(-5px/2))
+}
+
+.img-container img {
+  border-radius: 50%;
+  object-fit: cover;
+  height: 110px;
+  width: inherit;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+}
+
+.pause-btn {
+  position: absolute;
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background-color: transparent;
+  z-index: 2;
+}
+
+.pause-btn i {
+  transform: scale(275%)
+}
+
+.pause-btn i::before {
+  transform: scale(275%);
+  background: linear-gradient(
+    45deg,
+    #4f30ff,
+    #ff309f
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: initial; /* reset Font Awesome's display:inline-block */
+}
+
+.music-info {
+  flex-grow: 2;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.music-info h4 {
+  color: var(--text-color);
+  margin: 0;
+  margin-left: 0.5rem;
+  display: inline-block;
+  white-space: nowrap;
+  animation: scrolling-text 10s linear infinite;
+}
+
+.progress {
+  cursor: pointer;
+  height: 0.5rem;
+  width: 90%;
+  background: linear-gradient(
+    45deg,
+    #38ff3f,
+    #03ff9a
+  );
+  transition: width 0.1s linear;
+  border-radius: 5px;
+}
+
+.progress-container {
+  cursor: pointer;
+  background-color: white;
+  width: 100%;
+  height: 0.5rem;
+  border-radius: 5px;
+}
+
+
+@keyframes scrolling-text {
+  from {
+    transform: translateX(-150%)
+  }
+  to {
+    transform: translateX(150%)
+  }
+}
+
+
+
+/* CSS */
+.action-btn {
+  position: relative;
+  border-radius: 50%;
+  height: 3rem;
+  width: 3rem;
+  min-width: 3rem;
+  align-self: center;
+  margin: 0 15px 0 15px;
+  background-color: white;
+  outline: none;
+}
+
+.action-btn:before {
+  content: "";
+  background: linear-gradient(
+    45deg,
+    #ff0000,
+    #ff7300,
+    #fffb00,
+    #48ff00,
+    #00ffd5,
+    #002bff,
+    #7a00ff,
+    #ff00c8,
+    #ff0000
+  );
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  background-size: 400%;
+  z-index: -1;
+  filter: blur(5px);
+  -webkit-filter: blur(5px);
+  width: calc(100% + 4px);
+  height: calc(100% + 4px);
+  animation: glowing-button 20s linear infinite;
+  transition: opacity 0.3s ease-in-out;
+  border-radius: 50%;
+}
+
+@keyframes glowing-button {
+  0% {
+    background-position: 0 0;
+  }
+  50% {
+    background-position: 400% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+}
+
+.action-btn:after {
+  z-index: -1;
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: #222;
+  left: 0;
+  top: 0;
+  border-radius: 50%;
+  background-color: transparent;
+}
+
+.cancel-download {
+  visibility: hidden;
+  background-color: red;
+  margin: 0;
+}
+
+.spoiler:hover .cancel-download {
+  visibility: visible;
+}
+
+.spoiler {
+  width: 3rem;
+  height: 3rem;
+  position: absolute;
+  margin: 0 15px 0 15px;
+  transform: translateX(-15px);
+  align-self: center;
+  right: 0;
+  z-index: 1;
+}
+
+.fa-xmark {
+  color: white;
+  transform: scale(150%);
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 15px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  border-radius: 10px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #000000;
+  border-radius: 10px;
+}

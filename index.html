@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Player</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Add icon library -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+  </head>
+  <body>
+    <div class="topnav">
+      <button class="openbtn" onclick="open_playlist()"><i class="fa-solid fa-music"></i></button>
+      <button class="openbtn" onclick="open_downloads()"><i class="fa-solid fa-download"></i></button>
+      <input id="search-bar" type="text" placeholder="Search..">
+    </div>
+
+    <!-- Search results -->
+    <div id="items" class="search-items"></div>
+
+    <div id="my-playlist" class="sidebar">
+      <button onclick="shuffle_playlist()" class="action-btn" style="position: absolute; top: 8px; background-color: transparent"><i class="fa-solid fa-shuffle"></i></button>
+      <a href="javascript:void(0)" class="closebtn" onclick="close_playlist()">&times;</a>
+    </div>
+    <div id="my-downloads" class="sidebar">
+      <button onclick="add_all_to_playlist()" class="action-btn" style="position: absolute; top: 8px; background-color: transparent"><i class="fa-solid fa-angles-down"></i></button>
+      <a href="javascript:void(0)" class="closebtn" onclick="close_downloads()">&times;</a>
+    </div>
+    <div class="player-container">
+      <div id="mplayer" class="player">
+        <div class="img-container">
+          <button class="pause-btn" onclick="toggle_pause()"><i class="fa-solid fa-play"></i></button>
+          <img src="images/album.jpg" alt="music-cover" id="cover" />
+        </div>
+        <div class="music-info">
+          <br /><br />
+          <div class="progress-container" id="progress-container">
+            <div class="progress" id="progress"></div>
+          </div>
+          <h4 id="title">Long ass title I dont care about blah blah blah blah</h4>
+        </div>
+        <audio id="song" />
+      </div>
+    </div>
+  </body>
+  <script src="mplayer.js"></script>
+  <script src="index.js"></script>
+</html>

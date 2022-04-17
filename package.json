@@ -1,0 +1,21 @@
+{
+  "name": "musicplayerproto",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^18.0.4",
+    "electron-reloader": "^1.2.3"
+  },
+  "dependencies": {
+    "progressbar.js": "^1.1.0",
+    "ytdl-core": "^4.11.0",
+    "ytpl": "^2.3.0",
+    "ytsr": "^3.7.0"
+  }
+}
