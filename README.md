@@ -1,2 +1,2 @@
-# Atom Music Player Redux
+# Atom Redux
 Atomic Music Player Redux Ultimate Version Pro Max™®, now made in Electron...
