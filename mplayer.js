@@ -16,8 +16,8 @@ if(!fs.existsSync(download_location)) fs.mkdirSync(download_location)
 if(!fs.existsSync(playlist_location)) fs.mkdirSync(playlist_location)
 if(!fs.existsSync(downloads_csv_loc)) fs.writeFileSync(downloads_csv_loc, "")
 
-let playlist = []
-let currentTrack = -1
+let currentTrack = -1;
+let playlist = [];
 
 
 
@@ -292,6 +292,7 @@ ipcRenderer.on("export_playlist", (event, data) => {
 })
 
 function clear_playlist() {
+  currentTrack = -1;
   playlist = [];
 }
 
