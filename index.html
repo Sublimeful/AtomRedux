@@ -8,10 +8,11 @@
   </head>
   <body>
     <div class="topnav">
-      <button title="Open Playlist" class="openbtn" onclick="open_playlist()"><i class="fa-solid fa-music"></i></button>
-      <button title="Open Downloads" class="openbtn" onclick="open_downloads()"><i class="fa-solid fa-download"></i></button>
+      <button title="Open Playlist" class="navbtn" onclick="open_playlist()"><i class="fa-solid fa-music"></i></button>
+      <button title="Open Downloads" class="navbtn" onclick="open_downloads()"><i class="fa-solid fa-download"></i></button>
       <input id="search-bar" type="text" placeholder="Search..">
-      <button title="Download All" onclick="download_all_undownloaded_btn_clicked(document.querySelector('#items.search-items'))" class="action-btn" style="background-color: transparent; z-index: 0"><i class="fa-solid fa-download"></i></button>
+      <button title="Search" class="navbtn" onclick="search()"><i class="fa-solid fa-magnifying-glass"></i></button>
+      <button title="Download All" class="navbtn" onclick="download_all_undownloaded_btn_clicked(document.querySelector('#items.search-items'))"><i class="fa-solid fa-download"></i></button>
     </div>
 
     <!-- Search results -->

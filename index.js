@@ -7,27 +7,31 @@ search_bar.addEventListener("keyup", async function(event) {
   if(event.code === "Enter") {
     event.preventDefault()
 
-    let query = search_bar.value.trim();
-
-    if(!query) return;
-
-    let items = document.querySelector("#items")
-    items.innerHTML = '<div class="loader center"></div>'
-    
-    let videos = await mplayer.search_yt(query)
-
-    items.innerHTML = ''
-
-    for(let video of videos) {
-      render_video(video)
-    }
+    await search()
   }
 })
+
+async function search() {
+  let query = search_bar.value.trim();
+
+  if(!query) return;
+
+  let items = document.querySelector("#items")
+  items.innerHTML = '<div class="loader center"></div>'
+
+  let videos = await mplayer.search_yt(query)
+
+  items.innerHTML = ''
+
+  for(let video of videos) {
+    render_video(video)
+  }
+}
 
 function create_add_to_playlist_btn(download_info) {
   return create_action_btn("Add to Playlist", "fa-solid fa-plus", function() {
     mplayer.add_playlist(download_info)
-    render_playlist()
+    add_playlist_el(download_info);
   })
 }
 
@@ -195,8 +199,9 @@ async function download_btn_clicked(video_url, video_el) {
         } else {
           // Append remove from playlist button to the video element
           video_el.appendChild(create_action_btn("Remove from Playlist", "fa fa-trash", function() {
-            mplayer.del_playlist(mplayer.get_playlist_index(video_el));
-            render_playlist()
+            let index = mplayer.get_playlist_index(video_el)
+            mplayer.del_playlist(index);
+            del_playlist_el(index);
           }));
         }
       }
@@ -313,44 +318,72 @@ function render_downloads() {
   }
 }
 
-function render_playlist() {
-  let playlist = mplayer.get_playlist()
+function add_playlist_el(download_info) {
   let playlist_el = document.getElementById("my-playlist")
+  
+  let video_url = download_info[0]
+  let video_thumb = download_info[1]
+  let video_title = download_info[2]
+  let video_path = download_info[3]
 
-  for(let index = playlist_el.children.length - 1; index >= 0; index--) {
-    let child = playlist_el.children[index];
-    if(child.className !== "item") continue;
-    child.remove();
-  }
+  let video_el = create_video_el(video_title, video_thumb, video_url);
 
-  for(let download_info of playlist) {
-    let video_url = download_info[0]
-    let video_thumb = download_info[1]
-    let video_title = download_info[2]
-    let video_path = download_info[3]
-    
-    let video_el = create_video_el(video_title, video_thumb, video_url);
-    
-    playlist_el.append(video_el);
+  playlist_el.append(video_el);
+  
+  // If User has the downloaded music file
+  if(fs.existsSync(video_path)) {
+    video_el.appendChild(create_play_btn(download_info, video_url, video_el));
 
-    // If User has the downloaded music file
-    if(fs.existsSync(video_path)) {
-      video_el.appendChild(create_play_btn(download_info, video_url, video_el));
-
-      video_el.appendChild(create_action_btn("Remove from Playlist", "fa fa-trash", function() {
-        mplayer.del_playlist(mplayer.get_playlist_index(video_el));
-        render_playlist()
-      }));
-    } else {
-      video_el.appendChild(create_download_btn(video_url, video_el));
-    }
+    video_el.appendChild(create_action_btn("Remove from Playlist", "fa fa-trash", function() {
+      let index = mplayer.get_playlist_index(video_el)
+      mplayer.del_playlist(index);
+      del_playlist_el(index);
+    }));
+  } else {
+    video_el.appendChild(create_download_btn(video_url, video_el));
   }
 }
 
-function shuffle_btn_clicked() {
-  mplayer.shuffle_playlist();
+function del_playlist_el(index) {
+  let playlist_el = document.getElementById("my-playlist")
+  let items = playlist_el.querySelectorAll(".item")
+  
+  items[index].remove()
+}
 
-  render_playlist();
+function shuffle_btn_clicked() {
+  function swap_nodes(obj1, obj2) {
+    // create marker element and insert it where obj1 is
+    var temp = document.createElement("div");
+    obj1.parentNode.insertBefore(temp, obj1);
+
+    // move obj1 to right before obj2
+    obj2.parentNode.insertBefore(obj1, obj2);
+
+    // move obj2 to right before where obj1 used to be
+    temp.parentNode.insertBefore(obj2, temp);
+
+    // remove temporary marker node
+    temp.parentNode.removeChild(temp);
+  }
+
+  let playlist_el = document.getElementById("my-playlist")
+  let new_order = mplayer.shuffle_playlist();
+
+  // Append items back based on new order
+  // new_order.length === items.length - 1
+  let c = 0;
+  for(let i = new_order.length; i > 0; i--) {
+    let items = playlist_el.querySelectorAll(".item")
+
+    let j = new_order[c]
+    let node1 = items[i]
+    let node2 = items[j]
+
+    swap_nodes(node1, node2);
+
+    c++;
+  }
 }
 
 
@@ -359,9 +392,8 @@ function add_all_btn_clicked() {
   
   for(let info of downloads) {
     mplayer.add_playlist(info);
+    add_playlist_el(info);
   }
-
-  render_playlist();
 }
 
 function download_all_undownloaded_btn_clicked(parent_container) {
@@ -376,14 +408,17 @@ function download_all_undownloaded_btn_clicked(parent_container) {
 
 function clear_playlist_btn_clicked() {
   mplayer.clear_playlist()
-  render_playlist()
+
+  let playlist_el = document.getElementById("my-playlist")
+  let items = playlist_el.querySelectorAll(".item")
+
+  for(let index = items.length - 1; index >= 0; index--) {
+    del_playlist_el(index);
+  }
 }
 
 /* Set the width of the sidebar to 250px and the left margin of the page content to 250px */
 function open_playlist() {
-  // Render the playlist
-  render_playlist()
-
   // Open the playlist
   document.getElementById("my-playlist").style.width = "50vw";
 }

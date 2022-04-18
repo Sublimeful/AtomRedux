@@ -211,15 +211,21 @@ async function toggle_pause() {
 }
 
 function shuffle_playlist() {
+  let new_order = []
+
   function shuffle(a) {
     for (let i = a.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [a[i], a[j]] = [a[j], a[i]];
+
+      // Push into new_order
+      new_order.push(j)
     }
     return a;
   }
 
   shuffle(playlist)
+  return new_order
 }
 
 function get_playlist() {
@@ -254,8 +260,8 @@ ipcRenderer.on("import_playlist", (event, data) => {
     }
 
     add_playlist(video)
+    add_playlist_el(video)
   });
-  render_playlist()
 });
 
 ipcRenderer.on("export_playlist", (event, data) => {
