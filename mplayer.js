@@ -244,6 +244,13 @@ function shuffle_playlist() {
       const j = Math.floor(Math.random() * (i + 1));
       [a[i], a[j]] = [a[j], a[i]];
 
+      // Predict what currentTrack will be
+      if(currentTrack === i) {
+        currentTrack = j;
+      } else if(currentTrack === j) {
+        currentTrack = i;
+      }
+
       // Push into new_order
       new_order.push(j)
     }
