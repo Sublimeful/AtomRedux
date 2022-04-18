@@ -35,7 +35,7 @@ app.whenReady().then(() => {
   create_window()
 })
 
-try {
-	require('electron-reloader')(module);
-} catch {}
+// try {
+//   require('electron-reloader')(module);
+// } catch {}
 
