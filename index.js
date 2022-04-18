@@ -322,13 +322,17 @@ function update_playlist_el() {
   let playlist_el = document.getElementById("my-playlist")
 
   for(let i = 0; i < playlist.length; i++) {
+    let video_el = playlist_el.querySelectorAll(".item")[i]
+
+    // Check for cancel-download button, if it exists that
+    // means that video is currently downloading, so skip it
+    if(video_el.querySelector(".cancel-download")) continue;
+    
     let info = playlist[i]
     let video_url = info[0]
     let download_loc = info[3]
 
     if(!fs.existsSync(download_loc)) {
-      let video_el = playlist_el.querySelectorAll(".item")[i]
-
       video_el.querySelectorAll(".action-btn").forEach(el => el.remove())
       video_el.appendChild(create_download_btn(video_url, video_el));
     }
