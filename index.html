@@ -11,31 +11,35 @@
       <button class="openbtn" onclick="open_playlist()"><i class="fa-solid fa-music"></i></button>
       <button class="openbtn" onclick="open_downloads()"><i class="fa-solid fa-download"></i></button>
       <input id="search-bar" type="text" placeholder="Search..">
+      <button onclick="download_all_undownloaded_btn_clicked(document.querySelector('#items.search-items'))" class="action-btn" style="background-color: transparent; z-index: 0"><i class="fa-solid fa-download"></i></button>
     </div>
 
     <!-- Search results -->
     <div id="items" class="search-items"></div>
 
     <div id="my-playlist" class="sidebar">
-      <button onclick="shuffle_playlist()" class="action-btn" style="position: absolute; top: 8px; background-color: transparent"><i class="fa-solid fa-shuffle"></i></button>
+      <button onclick="shuffle_btn_clicked()" class="action-btn" style="position: absolute; top: 8px; background-color: transparent"><i class="fa-solid fa-shuffle"></i></button>
+      <button onclick="import_playlist()" class="action-btn" style="position: absolute; top: 8px; background-color: transparent; left: 4rem"><i class="fa-solid fa-file-import"></i></button>
+      <button onclick="export_playlist()" class="action-btn" style="position: absolute; top: 8px; background-color: transparent; left: 8rem"><i class="fa-solid fa-file-export"></i></button>
+      <button onclick="download_all_undownloaded_btn_clicked(this.parentNode)" class="action-btn" style="position: absolute; top: 8px; background-color: transparent; left: 12rem"><i class="fa-solid fa-download"></i></button>
       <a href="javascript:void(0)" class="closebtn" onclick="close_playlist()">&times;</a>
     </div>
     <div id="my-downloads" class="sidebar">
-      <button onclick="add_all_to_playlist()" class="action-btn" style="position: absolute; top: 8px; background-color: transparent"><i class="fa-solid fa-angles-down"></i></button>
+      <button onclick="add_all_btn_clicked()" class="action-btn" style="position: absolute; top: 8px; background-color: transparent"><i class="fa-solid fa-angles-down"></i></button>
       <a href="javascript:void(0)" class="closebtn" onclick="close_downloads()">&times;</a>
     </div>
     <div class="player-container">
       <div id="mplayer" class="player">
         <div class="img-container">
           <button class="pause-btn" onclick="toggle_pause()"><i class="fa-solid fa-play"></i></button>
-          <img src="images/album.jpg" alt="music-cover" id="cover" />
+          <img src="images/atom.png" alt="music-cover" id="cover" />
         </div>
         <div class="music-info">
           <br /><br />
           <div class="progress-container" id="progress-container">
             <div class="progress" id="progress"></div>
           </div>
-          <h4 id="title">Long ass title I dont care about blah blah blah blah</h4>
+          <h4 id="title">Untitled Song</h4>
         </div>
         <audio id="song" />
       </div>

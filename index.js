@@ -24,6 +24,40 @@ search_bar.addEventListener("keyup", async function(event) {
   }
 })
 
+function create_add_to_playlist_btn(download_info) {
+  return create_action_btn("fa-solid fa-plus", function() {
+    mplayer.add_playlist(download_info)
+    render_playlist()
+  })
+}
+
+/* Creates play button, if can't play, then provide download button */
+function create_play_btn(download_info, video_url, video_el) {
+  return create_action_btn("fa-solid fa-play", function() {
+    if(!video_el.parentNode) return;
+
+    let download_loc = download_info[3]
+    if(!fs.existsSync(download_loc)) {
+      video_el.querySelectorAll(".action-btn").forEach(el => el.remove())
+      video_el.appendChild(create_download_btn(video_url, video_el));
+      return;
+    }
+    
+    if(video_el.parentNode.id === "my-playlist") {
+      mplayer.play_playlist_index(mplayer.get_playlist_index(video_el));
+    } else {
+      mplayer.play_sound(download_info);
+    }
+  })
+}
+
+/* Create download button */
+function create_download_btn(video_url, video_el) {
+  return create_action_btn("fa fa-download", function() {
+    download_btn_clicked(video_url, video_el);
+  })
+}
+
 function start_player() {
   try {
     let current_time_el = document.querySelector(".current-time")
@@ -54,28 +88,33 @@ function start_player() {
 
       image_el.src = thumb
       title_el.textContent = title
+      progress_container_el.removeEventListener("click", onseek);
       progress_container_el.addEventListener("click", onseek);
     })
 
     audio_el.addEventListener("ended", () => {
-      progress_container_el.removeEventListener("click", onseek);
+      let pause_btn = document.querySelector(".pause-btn")
+      pause_btn.querySelector("i").classList = "fa-solid fa-play"
     })
   } catch(error) {
     throw error;
   }
 }
 
-async function download_btn_clicked(video, video_el) {
+async function download_btn_clicked(video_url, video_el) {
   const download_btn = video_el.querySelector(".action-btn");
   download_btn.remove()
 
   const loader = document.createElement("div")
   loader.className = "loader"
+  video_el.appendChild(loader);
 
   let download_canceled = false;
   let progress_bar;
 
   const cancel_download_btn_spoiler = document.createElement("span")
+  cancel_download_btn_spoiler.classList = "spoiler"
+
   const cancel_download_btn = create_action_btn("fa-solid fa-xmark", () => {
     download_canceled = true
     cancel_download_btn_spoiler.remove();
@@ -89,24 +128,15 @@ async function download_btn_clicked(video, video_el) {
       }
     }
 
-    video_el.appendChild(create_action_btn("fa fa-download", function() {
-      download_btn_clicked(video, video_el);
-    }));
+    video_el.appendChild(create_download_btn(video_url, video_el));
   });
 
-  const y_pos = video_el.getBoundingClientRect().y
-
-  cancel_download_btn_spoiler.classList = "spoiler"
-  cancel_download_btn_spoiler.style.top = `calc(${y_pos}px + 3rem/2)`
-
-  
   cancel_download_btn.classList.add("cancel-download")
   cancel_download_btn_spoiler.appendChild(cancel_download_btn);
 
   video_el.appendChild(cancel_download_btn_spoiler);
-  video_el.appendChild(loader);
 
-  const [event_el, write_stream] = await mplayer.download_music(video.url);
+  const [event_el, write_stream] = await mplayer.download_music(video_url);
 
   loader.remove()
 
@@ -129,8 +159,6 @@ async function download_btn_clicked(video, video_el) {
   progress_bar.set(0)
 
   event_el.addEventListener("progress", function(event) {
-    console.log("progress")
-
     let progress = event.detail.progress
     let write_stream = event.detail.write_stream
 
@@ -154,26 +182,24 @@ async function download_btn_clicked(video, video_el) {
 
     // When finished downloading
     if(progress === 1) {
-      const download_info = mplayer.get_download_info(video.url);
+      const download_info = mplayer.get_download_info(video_url);
 
-      // Append a play button to the video element
-      video_el.appendChild(create_action_btn("fa-solid fa-play", function() {
-        let download_loc = download_info[3]
-        if(!fs.existsSync(download_loc)) {
-          video_el.querySelectorAll(".action-btn").forEach(el => el.remove())
-          video_el.appendChild(create_action_btn("fa fa-download", function() {
-            download_btn_clicked(video, video_el);
+      // Checks if video_el has a parent (if it doesnt, then it has been removed prematurely)
+      if(video_el.parentNode) {
+        // Append a play button to the video element
+        video_el.appendChild(create_play_btn(download_info, video_url, video_el));
+
+        if(video_el.parentNode.id !== "my-playlist") {
+          // Append add to playlist button to the video element
+          video_el.appendChild(create_add_to_playlist_btn(download_info));
+        } else {
+          // Append remove from playlist button to the video element
+          video_el.appendChild(create_action_btn("fa fa-trash", function() {
+            mplayer.del_playlist(mplayer.get_playlist_index(video_el));
+            render_playlist()
           }));
-          return;
         }
-        mplayer.play_sound(download_info);
-      }));
-
-      // Append add to playlist button to the video element
-      video_el.appendChild(create_action_btn("fa-solid fa-plus", function() {
-        mplayer.add_playlist(download_info)
-        render_playlist()
-      }));
+      }
 
       progress_bar.destroy()
       event_el.remove()
@@ -238,25 +264,10 @@ function render_video(video) {
   const download_info = mplayer.get_download_info(video_url);
 
   if(!download_info) {
-    video_el.appendChild(create_action_btn("fa fa-download", function() {
-      download_btn_clicked(video, video_el);
-    }));
+    video_el.appendChild(create_download_btn(video_url, video_el));
   } else {
-    video_el.appendChild(create_action_btn("fa-solid fa-play", function() {
-      let download_loc = download_info[3]
-      if(!fs.existsSync(download_loc)) {
-        video_el.querySelectorAll(".action-btn").forEach(el => el.remove())
-        video_el.appendChild(create_action_btn("fa fa-download", function() {
-          download_btn_clicked(video, video_el);
-        }));
-        return;
-      }
-      mplayer.play_sound(download_info);
-    }));
-    video_el.appendChild(create_action_btn("fa-solid fa-plus", function() {
-      mplayer.add_playlist(download_info)
-      render_playlist()
-    }));
+    video_el.appendChild(create_play_btn(download_info, video_url, video_el));
+    video_el.appendChild(create_add_to_playlist_btn(download_info));
   }
 
   items_el.appendChild(video_el);
@@ -264,6 +275,8 @@ function render_video(video) {
 
 function render_downloads() {
   try {
+    mplayer.validate_downloads_csv()
+
     let downloads = mplayer.get_downloads_csv()
     let downloads_el = document.getElementById("my-downloads")
 
@@ -273,29 +286,24 @@ function render_downloads() {
       child.remove();
     }
 
-    for(let info of downloads) {
-      let url = info[0]
-      let thumb = info[1]
-      let title = info[2]
-      let path = info[3]
+    for(let download_info of downloads) {
+      let video_url = download_info[0]
+      let video_thumb = download_info[1]
+      let video_title = download_info[2]
+      let video_path = download_info[3]
 
-      let video_el = create_video_el(title, thumb, url);
+      let video_el = create_video_el(video_title, video_thumb, video_url);
 
       downloads_el.appendChild(video_el);
 
-      video_el.appendChild(create_action_btn("fa-solid fa-play", function() {
-        mplayer.play_sound(info);
-      }));
+      video_el.appendChild(create_play_btn(download_info, video_url, video_el));
 
       video_el.appendChild(create_action_btn("fa fa-trash", function() {
-        mplayer.delete_music(path)
+        mplayer.delete_music(video_path)
         render_downloads()
       }));
 
-      video_el.appendChild(create_action_btn("fa-solid fa-plus", function() {
-        mplayer.add_playlist(info)
-        render_playlist()
-      }));
+      video_el.appendChild(create_add_to_playlist_btn(download_info));
     }
 
   } catch(error) {
@@ -314,29 +322,38 @@ function render_playlist() {
     child.remove();
   }
 
-  for(let download of playlist) {
-    let video_url = download[0]
-    let thumb = download[1]
-    let title = download[2]
-    let path = download[3]
+  for(let download_info of playlist) {
+    let video_url = download_info[0]
+    let video_thumb = download_info[1]
+    let video_title = download_info[2]
+    let video_path = download_info[3]
     
-    let video_el = create_video_el(title, thumb, video_url)
-
+    let video_el = create_video_el(video_title, video_thumb, video_url);
     
     playlist_el.append(video_el);
 
-    video_el.appendChild(create_action_btn("fa-solid fa-play", function() {
-      mplayer.play_playlist_index(get_playlist_index(video_el));
-    }));
+    // If User has the downloaded music file
+    if(fs.existsSync(video_path)) {
+      video_el.appendChild(create_play_btn(download_info, video_url, video_el));
 
-    video_el.appendChild(create_action_btn("fa fa-trash", function() {
-      mplayer.del_playlist(get_playlist_index(video_el));
-      render_playlist()
-    }));
+      video_el.appendChild(create_action_btn("fa fa-trash", function() {
+        mplayer.del_playlist(mplayer.get_playlist_index(video_el));
+        render_playlist()
+      }));
+    } else {
+      video_el.appendChild(create_download_btn(video_url, video_el));
+    }
   }
 }
 
-function add_all_to_playlist() {
+function shuffle_btn_clicked() {
+  mplayer.shuffle_playlist();
+
+  render_playlist();
+}
+
+
+function add_all_btn_clicked() {
   let downloads = get_downloads_csv()
   
   for(let info of downloads) {
@@ -346,18 +363,22 @@ function add_all_to_playlist() {
   render_playlist();
 }
 
-function shuffle_playlist() {
-  mplayer.shuffle_playlist();
+function download_all_undownloaded_btn_clicked(parent_container) {
+  parent_container.querySelectorAll(".item").forEach(video_el => {
+    let download_btn_icon = video_el.querySelector(".action-btn > i.fa-download");
+    if(!download_btn_icon) return;
 
-  render_playlist();
-}
-
-function get_playlist_index(video_el) {
-  return [...video_el.parentElement.querySelectorAll(".item")].indexOf(video_el);
+    let download_btn = download_btn_icon.parentNode;
+    download_btn.click();
+  })
 }
 
 /* Set the width of the sidebar to 250px and the left margin of the page content to 250px */
 function open_playlist() {
+  // Render the playlist
+  render_playlist()
+
+  // Open the playlist
   document.getElementById("my-playlist").style.width = "50vw";
 }
 
@@ -368,6 +389,10 @@ function close_playlist() {
 
 /* Set the width of the sidebar to 250px and the left margin of the page content to 250px */
 function open_downloads() {
+  // Render downloads
+  render_downloads()
+
+  // Open downloads
   document.getElementById("my-downloads").style.width = "50vw";
 }
 
@@ -378,8 +403,5 @@ function close_downloads() {
 
 render_downloads()
 start_player()
-mplayer.validate_downloads_csv()
-
-
 
 

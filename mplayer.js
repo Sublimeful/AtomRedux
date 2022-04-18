@@ -1,3 +1,5 @@
+const { ipcRenderer } = require("electron");
+
 const ytpl = require('ytpl');
 const ytdl = require("ytdl-core")
 const ytsr = require("ytsr")
@@ -28,11 +30,16 @@ function get_download_info(video_url) {
   return null;
 }
 
-function get_downloads_csv() {
-  let downloads_csv = fs.readFileSync(downloads_csv_loc, {encoding: "utf8", flag: "r"})
-  let videos = downloads_csv.split("\n").filter(_ => _).map(_ => _.split(","));
+function unpack_csv(loc_of_csv) {
+  let data = fs.readFileSync(loc_of_csv, {encoding: "utf8", flag: "r"})
+  let unpacked = data.split("\n").filter(_ => _).map(_ => _.split(","));
 
-  return videos;
+  return unpacked;
+}
+
+function get_downloads_csv() {
+  // Return downloads infos
+  return unpack_csv(downloads_csv_loc);
 }
 
 async function download_music(url) {
@@ -49,7 +56,6 @@ async function download_music(url) {
     let to_stream = fs.createWriteStream(output);
     
     to_stream.addListener("close", () => {
-      console.log("from_stream destroyed!")
       from_stream.destroy()
     });
 
@@ -57,11 +63,7 @@ async function download_music(url) {
     let event_el = document.createElement("div")
 
     from_stream.on("data", data => {
-
-      console.log("data")
-      
       to_stream.write(data, () => {
-        console.log("data written!")
         written += data.length
 
         // Once the file has been downloaded completely, close the stream
@@ -85,12 +87,13 @@ async function download_music(url) {
 }
 
 function validate_downloads_csv() {
-  let downloads = new Set(get_downloads_csv())
+  let downloads = get_downloads_csv()
+  let unique_downloads = downloads.filter((object,index) => index === downloads.findIndex(obj => JSON.stringify(obj) === JSON.stringify(object)));
 
   // Clear downloads csv
   fs.writeFileSync(downloads_csv_loc, '');
 
-  for(let download of downloads) {
+  for(let download of unique_downloads) {
     let path = download[3]
     if(fs.existsSync(path)) fs.appendFileSync(downloads_csv_loc, download.join(",") + "\n");
   }
@@ -98,7 +101,6 @@ function validate_downloads_csv() {
 
 function delete_music(path) {
   fs.unlinkSync(path)
-  validate_downloads_csv();
 }
 
 async function search_yt(query) {
@@ -118,6 +120,10 @@ async function play_sound(info) {
   try {
     let audio_el = document.getElementById("song")
     let pause_btn = document.querySelector(".pause-btn")
+
+    // Detach play_next so that when this sound ends,
+    // it won't play the next song (facepalm)
+    audio_el.removeEventListener("ended", play_next);
 
     let path_to_sound = info[3]
     audio_el.setAttribute('src', path_to_sound)
@@ -171,15 +177,17 @@ async function play_playlist_index(index) {
     currentTrack = -1;
     throw `Index out of bounds: ${index}`;
   }
+
   let audio_el = document.getElementById("song")
   let info = playlist[index]
-
-  audio_el.removeEventListener("ended", play_next);
-  audio_el.addEventListener("ended", play_next);
 
   currentTrack = index;
 
   await play_sound(info);
+
+  // Attach play_next so that when the song ends,
+  // it will play the next track in the playlist
+  audio_el.addEventListener("ended", play_next);
 }
 
 async function toggle_pause() {
@@ -214,7 +222,59 @@ function get_playlist() {
   return playlist;
 }
 
-module.exports = {download_music, search_yt, play_sound, get_downloads_csv, get_download_info, delete_music, validate_downloads_csv, add_playlist, del_playlist, get_playlist, play_playlist_index, shuffle_playlist}
+function import_playlist() {
+  ipcRenderer.invoke("import_playlist");
+}
+
+function export_playlist() {
+  ipcRenderer.invoke("export_playlist");
+}
+
+ipcRenderer.on("import_playlist", (event, data) => {
+  const canceled = data.canceled;
+  const paths = data.filePaths;
+  
+  if(canceled) return;
+  
+  let path = paths[0]
+  const csv = unpack_csv(path);
+
+  csv.forEach(video => {
+    let video_url = video[0]
+    let video_path = video[3]
+
+    // If user does not have the video in their downloads csv, but has the video downloaded
+    // Then add the video to their downloads csv
+    if(!get_download_info(video_url) && fs.existsSync(video_path)) {
+      fs.appendFileSync(downloads_csv_loc, video.join(",") + "\n");
+    }
+
+    add_playlist(video)
+  });
+  render_playlist()
+});
+
+ipcRenderer.on("export_playlist", (event, data) => {
+  const canceled = data.canceled;
+  const path = data.filePath;
+  
+  if(canceled) return;
+
+  // Clear the csv
+  fs.writeFileSync(path, '');
+  
+  for(let video of get_playlist()) {
+    fs.appendFileSync(path, video.join(",") + "\n");
+  }
+})
+
+
+
+function get_playlist_index(video_el) {
+  return [...video_el.parentElement.querySelectorAll(".item")].indexOf(video_el);
+}
+
+module.exports = {download_music, search_yt, play_sound, unpack_csv, get_downloads_csv, get_download_info, delete_music, validate_downloads_csv, add_playlist, del_playlist, get_playlist, play_playlist_index, shuffle_playlist, import_playlist, export_playlist, get_playlist_index}
 
 
 window.playlist = playlist;
