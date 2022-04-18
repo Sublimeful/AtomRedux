@@ -173,13 +173,17 @@ function del_playlist(index) {
 }
 
 async function play_next() {
+  // If playlist has been cleared of everything,
+  // then there's nothing left to play!
+  if(playlist.length === 0) return;
+  
   await play_playlist_index((currentTrack + 1) % playlist.length);
 }
 
 async function play_playlist_index(index) {
-  if(index >= playlist.length || index < 0) {
+  if(index >= playlist.length || index < 0 || isNaN(index)) {
     currentTrack = -1;
-    throw `Index out of bounds: ${index}`;
+    throw `Index out of bounds or NaN: ${index}`;
   }
 
   let audio_el = document.getElementById("song")
