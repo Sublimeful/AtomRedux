@@ -1,6 +1,4 @@
-const mplayer = require("./mplayer.js")
 const ProgressBar = require('progressbar.js')
-
 const search_bar = document.querySelector("#search-bar")
 
 search_bar.addEventListener("keyup", async function(event) {
@@ -19,7 +17,7 @@ async function search() {
   let items = document.querySelector("#items")
   items.innerHTML = '<div class="loader center"></div>'
 
-  let videos = await mplayer.search_yt(query)
+  let videos = await search_yt(query)
 
   items.innerHTML = ''
 
@@ -30,7 +28,7 @@ async function search() {
 
 function create_add_to_playlist_btn(download_info) {
   return create_action_btn("Add to Playlist", "fa-solid fa-plus", function() {
-    mplayer.add_playlist(download_info)
+    add_playlist(download_info)
     add_playlist_el(download_info);
   })
 }
@@ -48,9 +46,9 @@ function create_play_btn(download_info, video_url, video_el) {
     }
     
     if(video_el.parentNode.id === "my-playlist") {
-      mplayer.play_playlist_index(mplayer.get_playlist_index(video_el));
+      play_playlist_index(get_playlist_index(video_el));
     } else {
-      mplayer.play_sound(download_info);
+      play_sound(download_info);
     }
   })
 }
@@ -140,7 +138,7 @@ async function download_btn_clicked(video_url, video_el) {
 
   video_el.appendChild(cancel_download_btn_spoiler);
 
-  const [event_el, write_stream] = await mplayer.download_music(video_url);
+  const [event_el, write_stream] = await download_music(video_url);
 
   loader.remove()
 
@@ -186,7 +184,7 @@ async function download_btn_clicked(video_url, video_el) {
 
     // When finished downloading
     if(progress === 1) {
-      const download_info = mplayer.get_download_info(video_url);
+      const download_info = get_download_info(video_url);
 
       // Checks if video_el has a parent (if it doesnt, then it has been removed prematurely)
       if(video_el.parentNode) {
@@ -199,8 +197,8 @@ async function download_btn_clicked(video_url, video_el) {
         } else {
           // Append remove from playlist button to the video element
           video_el.appendChild(create_action_btn("Remove from Playlist", "fa fa-trash", function() {
-            let index = mplayer.get_playlist_index(video_el)
-            mplayer.del_playlist(index);
+            let index = get_playlist_index(video_el)
+            del_playlist(index);
             del_playlist_el(index);
           }));
         }
@@ -267,7 +265,7 @@ function render_video(video) {
 
   const video_el = create_video_el(video_title, video_thumb, video_url);
 
-  const download_info = mplayer.get_download_info(video_url);
+  const download_info = get_download_info(video_url);
 
   if(!download_info) {
     video_el.appendChild(create_download_btn(video_url, video_el));
@@ -281,9 +279,9 @@ function render_video(video) {
 
 function render_downloads() {
   try {
-    mplayer.validate_downloads_csv()
+    validate_downloads_csv()
 
-    let downloads = mplayer.get_downloads_csv()
+    let downloads = get_downloads_csv()
     let downloads_el = document.getElementById("my-downloads")
 
     for(let index = downloads_el.children.length - 1; index >= 0; index--) {
@@ -305,7 +303,7 @@ function render_downloads() {
       video_el.appendChild(create_play_btn(download_info, video_url, video_el));
 
       video_el.appendChild(create_action_btn("Delete", "fa fa-trash", function() {
-        mplayer.delete_music(video_path)
+        delete_music(video_path)
         render_downloads()
       }));
 
@@ -335,8 +333,8 @@ function add_playlist_el(download_info) {
     video_el.appendChild(create_play_btn(download_info, video_url, video_el));
 
     video_el.appendChild(create_action_btn("Remove from Playlist", "fa fa-trash", function() {
-      let index = mplayer.get_playlist_index(video_el)
-      mplayer.del_playlist(index);
+      let index = get_playlist_index(video_el)
+      del_playlist(index);
       del_playlist_el(index);
     }));
   } else {
@@ -368,7 +366,7 @@ function shuffle_btn_clicked() {
   }
 
   let playlist_el = document.getElementById("my-playlist")
-  let new_order = mplayer.shuffle_playlist();
+  let new_order = shuffle_playlist();
 
   // Append items back based on new order
   // new_order.length === items.length - 1
@@ -391,7 +389,7 @@ function add_all_btn_clicked() {
   let downloads = get_downloads_csv()
   
   for(let info of downloads) {
-    mplayer.add_playlist(info);
+    add_playlist(info);
     add_playlist_el(info);
   }
 }
@@ -407,7 +405,7 @@ function download_all_undownloaded_btn_clicked(parent_container) {
 }
 
 function clear_playlist_btn_clicked() {
-  mplayer.clear_playlist()
+  clear_playlist()
 
   let playlist_el = document.getElementById("my-playlist")
   let items = playlist_el.querySelectorAll(".item")
@@ -444,5 +442,4 @@ function close_downloads() {
 
 render_downloads()
 start_player()
-
 
