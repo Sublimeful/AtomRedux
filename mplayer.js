@@ -6,9 +6,9 @@ const ytsr = require("ytsr")
 const fs = require("fs")
 const path = require("path")
 
-const music_location = path.resolve(path.join(__dirname, "Music"))
-const download_location = path.resolve(path.join(__dirname, "Music", "Downloads"))
-const playlist_location = path.resolve(path.join(__dirname, "Music", "Playlists"))
+const music_location = path.resolve(path.join(__dirname, "../", "Music"))
+const download_location = path.resolve(path.join(music_location, "Downloads"))
+const playlist_location = path.resolve(path.join(music_location, "Playlists"))
 const downloads_csv_loc = path.resolve(path.join(download_location, "Downloads.csv"))
 
 if(!fs.existsSync(music_location)) fs.mkdirSync(music_location)
