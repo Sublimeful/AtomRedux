@@ -190,7 +190,7 @@ html {
 }
 
 .img-container::after {
-  --border-width: 2px;
+  --border-width: 4px;
   content:'';
   position: absolute;
   width: calc(110px + var(--border-width));
