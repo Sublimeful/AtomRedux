@@ -166,8 +166,16 @@ function del_playlist(index) {
   }
   
   if(index === currentTrack) {
-    if(currentTrack >= playlist.length || currentTrack < 0) return;
-    play_playlist_index(currentTrack)
+    // If currently idling, then dont do anything
+    if(currentTrack < 0) return;
+
+    // Deleting last element from playlist and currentTrack is that last element
+    if(currentTrack >= playlist.length && playlist.length > 0) {
+      play_playlist_index(playlist.length - 1);
+      return;
+    }
+
+    play_playlist_index(currentTrack);
     return;
   }
 }
