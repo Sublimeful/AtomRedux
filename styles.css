@@ -190,13 +190,14 @@ html {
 }
 
 .img-container::after {
+  --border-width: 2px;
   content:'';
   position: absolute;
-  width: calc(110px + 5px);
-  height: calc(110px + 5px);
+  width: calc(110px + var(--border-width));
+  height: calc(110px + var(--border-width));
   border-radius: 50%;
   background-color: white;
-  transform: translate(calc(-5px/2), calc(-5px/2))
+  transform: translate(calc(-1 * var(--border-width)/2), calc(-1 * var(--border-width)/2))
 }
 
 .img-container img {
