@@ -8,25 +8,26 @@
   </head>
   <body>
     <div class="topnav">
-      <button class="openbtn" onclick="open_playlist()"><i class="fa-solid fa-music"></i></button>
-      <button class="openbtn" onclick="open_downloads()"><i class="fa-solid fa-download"></i></button>
+      <button title="Open Playlist" class="openbtn" onclick="open_playlist()"><i class="fa-solid fa-music"></i></button>
+      <button title="Open Downloads" class="openbtn" onclick="open_downloads()"><i class="fa-solid fa-download"></i></button>
       <input id="search-bar" type="text" placeholder="Search..">
-      <button onclick="download_all_undownloaded_btn_clicked(document.querySelector('#items.search-items'))" class="action-btn" style="background-color: transparent; z-index: 0"><i class="fa-solid fa-download"></i></button>
+      <button title="Download All" onclick="download_all_undownloaded_btn_clicked(document.querySelector('#items.search-items'))" class="action-btn" style="background-color: transparent; z-index: 0"><i class="fa-solid fa-download"></i></button>
     </div>
 
     <!-- Search results -->
     <div id="items" class="search-items"></div>
 
     <div id="my-playlist" class="sidebar">
-      <button onclick="shuffle_btn_clicked()" class="action-btn" style="position: absolute; top: 8px; background-color: transparent"><i class="fa-solid fa-shuffle"></i></button>
-      <button onclick="import_playlist()" class="action-btn" style="position: absolute; top: 8px; background-color: transparent; left: 4rem"><i class="fa-solid fa-file-import"></i></button>
-      <button onclick="export_playlist()" class="action-btn" style="position: absolute; top: 8px; background-color: transparent; left: 8rem"><i class="fa-solid fa-file-export"></i></button>
-      <button onclick="download_all_undownloaded_btn_clicked(this.parentNode)" class="action-btn" style="position: absolute; top: 8px; background-color: transparent; left: 12rem"><i class="fa-solid fa-download"></i></button>
-      <a href="javascript:void(0)" class="closebtn" onclick="close_playlist()">&times;</a>
+      <button title="Shuffle Playlist" onclick="shuffle_btn_clicked()" class="action-btn" style="position: absolute; top: 8px; background-color: transparent"><i class="fa-solid fa-shuffle"></i></button>
+      <button title="Import Playlist" onclick="import_playlist()" class="action-btn" style="position: absolute; top: 8px; background-color: transparent; left: 4rem"><i class="fa-solid fa-file-import"></i></button>
+      <button title="Export Playlist" onclick="export_playlist()" class="action-btn" style="position: absolute; top: 8px; background-color: transparent; left: 8rem"><i class="fa-solid fa-file-export"></i></button>
+      <button title="Download All" onclick="download_all_undownloaded_btn_clicked(this.parentNode)" class="action-btn" style="position: absolute; top: 8px; background-color: transparent; left: 12rem"><i class="fa-solid fa-download"></i></button>
+      <button title="Clear Playlist" onclick="clear_playlist_btn_clicked()" class="action-btn" style="position: absolute; top: 8px; background-color: transparent; left: 16rem"><i class="fa-solid fa-ban"></i></button>
+      <a title="Close Playlist" href="javascript:void(0)" class="closebtn" onclick="close_playlist()">&times;</a>
     </div>
     <div id="my-downloads" class="sidebar">
-      <button onclick="add_all_btn_clicked()" class="action-btn" style="position: absolute; top: 8px; background-color: transparent"><i class="fa-solid fa-angles-down"></i></button>
-      <a href="javascript:void(0)" class="closebtn" onclick="close_downloads()">&times;</a>
+      <button title="Add All to Playlist" onclick="add_all_btn_clicked()" class="action-btn" style="position: absolute; top: 8px; background-color: transparent"><i class="fa-solid fa-angles-down"></i></button>
+      <a title="Close Downloads" href="javascript:void(0)" class="closebtn" onclick="close_downloads()">&times;</a>
     </div>
     <div class="player-container">
       <div id="mplayer" class="player">

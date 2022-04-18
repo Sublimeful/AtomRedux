@@ -6,10 +6,14 @@ const ytsr = require("ytsr")
 const fs = require("fs")
 const path = require("path")
 
-const download_location = path.resolve(path.join(process.env.HOME, "Music", "Downloads"))
+const music_location = path.resolve(path.join(__dirname, "Music"))
+const download_location = path.resolve(path.join(__dirname, "Music", "Downloads"))
+const playlist_location = path.resolve(path.join(__dirname, "Music", "Playlists"))
 const downloads_csv_loc = path.resolve(path.join(download_location, "Downloads.csv"))
 
+if(!fs.existsSync(music_location)) fs.mkdirSync(music_location)
 if(!fs.existsSync(download_location)) fs.mkdirSync(download_location)
+if(!fs.existsSync(playlist_location)) fs.mkdirSync(playlist_location)
 if(!fs.existsSync(downloads_csv_loc)) fs.writeFileSync(downloads_csv_loc, "")
 
 let playlist = []
@@ -223,11 +227,11 @@ function get_playlist() {
 }
 
 function import_playlist() {
-  ipcRenderer.invoke("import_playlist");
+  ipcRenderer.invoke("import_playlist", playlist_location);
 }
 
 function export_playlist() {
-  ipcRenderer.invoke("export_playlist");
+  ipcRenderer.invoke("export_playlist", playlist_location);
 }
 
 ipcRenderer.on("import_playlist", (event, data) => {
@@ -268,13 +272,15 @@ ipcRenderer.on("export_playlist", (event, data) => {
   }
 })
 
-
+function clear_playlist() {
+  playlist = [];
+}
 
 function get_playlist_index(video_el) {
   return [...video_el.parentElement.querySelectorAll(".item")].indexOf(video_el);
 }
 
-module.exports = {download_music, search_yt, play_sound, unpack_csv, get_downloads_csv, get_download_info, delete_music, validate_downloads_csv, add_playlist, del_playlist, get_playlist, play_playlist_index, shuffle_playlist, import_playlist, export_playlist, get_playlist_index}
+module.exports = {download_music, search_yt, play_sound, unpack_csv, get_downloads_csv, get_download_info, delete_music, validate_downloads_csv, add_playlist, del_playlist, get_playlist, play_playlist_index, shuffle_playlist, import_playlist, export_playlist, get_playlist_index, clear_playlist}
 
 
 window.playlist = playlist;
