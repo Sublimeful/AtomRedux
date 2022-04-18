@@ -184,6 +184,9 @@ async function play_next() {
   // If playlist has been cleared of everything,
   // then there's nothing left to play!
   if(playlist.length === 0) return;
+
+  // If idling, then do not play the 0th index
+  if(currentTrack < 0) return;
   
   await play_playlist_index((currentTrack + 1) % playlist.length);
 }
