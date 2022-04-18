@@ -234,49 +234,49 @@ function get_playlist() {
 
 function import_playlist() {
   ipcRenderer.invoke("import_playlist", playlist_location);
+
+  ipcRenderer.once("import_playlist", (event, data) => {
+    const canceled = data.canceled;
+    const paths = data.filePaths;
+    
+    if(canceled) return;
+    
+    let path = paths[0]
+    const csv = unpack_csv(path);
+
+    csv.forEach(video => {
+      let video_url = video[0]
+      let video_path = video[3]
+
+      // If user does not have the video in their downloads csv, but has the video downloaded
+      // Then add the video to their downloads csv
+      if(!get_download_info(video_url) && fs.existsSync(video_path)) {
+        fs.appendFileSync(downloads_csv_loc, video.join(",") + "\n");
+      }
+
+      add_playlist(video)
+      add_playlist_el(video)
+    });
+  });
 }
 
 function export_playlist() {
   ipcRenderer.invoke("export_playlist", playlist_location);
-}
 
-ipcRenderer.on("import_playlist", (event, data) => {
-  const canceled = data.canceled;
-  const paths = data.filePaths;
-  
-  if(canceled) return;
-  
-  let path = paths[0]
-  const csv = unpack_csv(path);
+  ipcRenderer.once("export_playlist", (event, data) => {
+    const canceled = data.canceled;
+    const path = data.filePath;
 
-  csv.forEach(video => {
-    let video_url = video[0]
-    let video_path = video[3]
+    if(canceled) return;
 
-    // If user does not have the video in their downloads csv, but has the video downloaded
-    // Then add the video to their downloads csv
-    if(!get_download_info(video_url) && fs.existsSync(video_path)) {
-      fs.appendFileSync(downloads_csv_loc, video.join(",") + "\n");
+    // Clear the csv
+    fs.writeFileSync(path, '');
+
+    for(let video of get_playlist()) {
+      fs.appendFileSync(path, video.join(",") + "\n");
     }
-
-    add_playlist(video)
-    add_playlist_el(video)
-  });
-});
-
-ipcRenderer.on("export_playlist", (event, data) => {
-  const canceled = data.canceled;
-  const path = data.filePath;
-  
-  if(canceled) return;
-
-  // Clear the csv
-  fs.writeFileSync(path, '');
-  
-  for(let video of get_playlist()) {
-    fs.appendFileSync(path, video.join(",") + "\n");
-  }
-})
+  })
+}
 
 function clear_playlist() {
   playlist = [];
@@ -287,7 +287,4 @@ function get_playlist_index(video_el) {
 }
 
 module.exports = {download_music, search_yt, play_sound, unpack_csv, get_downloads_csv, get_download_info, delete_music, validate_downloads_csv, add_playlist, del_playlist, get_playlist, play_playlist_index, shuffle_playlist, import_playlist, export_playlist, get_playlist_index, clear_playlist}
-
-
-window.playlist = playlist;
 
