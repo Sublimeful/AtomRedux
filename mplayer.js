@@ -112,6 +112,17 @@ async function search_yt(query) {
     let res = await ytpl(query, { pages: Infinity });
     return res.items;
   }
+  
+  if(ytdl.validateURL(query)) {
+    let res = await ytdl.getBasicInfo(query)
+    let video = {
+      title: res.videoDetails.title,
+      thumbnails: res.videoDetails.thumbnails,
+      id: res.videoDetails.videoId
+    }
+
+    return [video];
+  }
 
   let options = {pages: 1}
   let res = await ytsr(query, options);
