@@ -16,7 +16,7 @@
     }
   },
   "author": "Sublimeful",
-  "license": "GPLV3",
+  "license": "GPL-3.0-or-later",
   "devDependencies": {
     "electron": "^18.0.4",
     "electron-builder": "^23.0.3",
