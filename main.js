@@ -1,8 +1,6 @@
 const { app, BrowserWindow } = require("electron")
 const { ipcMain, dialog } = require("electron");
 
-require('electron-reloader')(module);
-
 const create_window = () => {
   const win = new BrowserWindow({
     width: 800,
@@ -30,12 +28,7 @@ const create_window = () => {
   })
 }
 
-
-
-
-
 app.whenReady().then(() => {
   create_window()
 })
-
 
