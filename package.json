@@ -1,15 +1,25 @@
 {
-  "name": "musicplayerproto",
-  "version": "1.0.0",
-  "description": "",
+  "name": "AtomRedux",
+  "version": "2.0.1",
+  "description": "Music player/Youtube downloader",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "postinstall": "electron-builder install-app-deps"
   },
-  "author": "",
-  "license": "ISC",
+  "build": {
+    "appId": "sublimeful.atomredux",
+    "mac": {
+      "category": "music.player"
+    }
+  },
+  "author": "Sublimeful",
+  "license": "GPLV3",
   "devDependencies": {
     "electron": "^18.0.4",
+    "electron-builder": "^23.0.3",
     "electron-reloader": "^1.2.3"
   },
   "dependencies": {
