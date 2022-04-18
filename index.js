@@ -316,6 +316,25 @@ function render_downloads() {
   }
 }
 
+/** Replace playlist item's button with download if
+    the music file is missing */
+function update_playlist_el() {
+  let playlist_el = document.getElementById("my-playlist")
+
+  for(let i = 0; i < playlist.length; i++) {
+    let info = playlist[i]
+    let video_url = info[0]
+    let download_loc = info[3]
+
+    if(!fs.existsSync(download_loc)) {
+      let video_el = playlist_el.querySelectorAll(".item")[i]
+
+      video_el.querySelectorAll(".action-btn").forEach(el => el.remove())
+      video_el.appendChild(create_download_btn(video_url, video_el));
+    }
+  }
+}
+
 function add_playlist_el(download_info) {
   let playlist_el = document.getElementById("my-playlist")
   
@@ -417,6 +436,9 @@ function clear_playlist_btn_clicked() {
 
 /* Set the width of the sidebar to 250px and the left margin of the page content to 250px */
 function open_playlist() {
+  // Updates the playlist elements
+  update_playlist_el()
+  
   // Open the playlist
   document.getElementById("my-playlist").style.width = "50vw";
 }

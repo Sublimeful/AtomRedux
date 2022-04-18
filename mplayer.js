@@ -262,21 +262,30 @@ ipcRenderer.on("import_playlist", (event, data) => {
 
   if(canceled) return;
 
-  let path = paths[0]
-  const csv = unpack_csv(path);
+  const csv_path = paths[0]
+  const csv = unpack_csv(csv_path);
 
   csv.forEach(video => {
     let video_url = video[0]
-    let video_path = video[3]
+    let video_thumb = video[1]
+    let video_title = video[2]
 
+    // Update the path so it stays consistent with user's computer
+    // Extract file extension using regex and get new video_path
+    let container = video[3].match(/\.[0-9a-z]+$/i)[0].substr(1)
+    let valid_file_name = `${video_title.replace(/[/\\?%*:|"<>]/g, '-')}.${container}`;
+    let video_path = path.resolve(path.join(download_location, valid_file_name));
+    
+    let download_info = [video_url, video_thumb, video_title, video_path];
+    
     // If user does not have the video in their downloads csv, but has the video downloaded
     // Then add the video to their downloads csv
     if(!get_download_info(video_url) && fs.existsSync(video_path)) {
-      fs.appendFileSync(downloads_csv_loc, video.join(",") + "\n");
+      fs.appendFileSync(downloads_csv_loc, download_info.join(",") + "\n");
     }
 
-    add_playlist(video)
-    add_playlist_el(video)
+    add_playlist(download_info)
+    add_playlist_el(download_info)
   });
 });
 
