@@ -21,6 +21,10 @@ let playlist = [];
 
 
 
+function convert_to_csv(string) {
+  return string.replace(/[/\\?%*:|"<>,]/g, '-');
+}
+
 function get_download_info(video_url) {
   let downloads = get_downloads_csv()
   for(let info of downloads) {
@@ -54,11 +58,15 @@ async function download_music(url) {
   try {
     let best_audio = ytdl.chooseFormat(formats, {quality: "highestaudio", filter: "audioonly"});
     let content_length = parseInt(best_audio.contentLength)
-    let valid_file_name = `${title.replace(/[/\\?%*:|"<>]/g, '-')}.${best_audio.container}`;
+
+    // Convert to csv
+    let valid_title = convert_to_csv(title)
+    let valid_file_name = `${valid_title}.${best_audio.container}`;
+
     let output = path.resolve(path.join(download_location, valid_file_name));
     let from_stream = ytdl.downloadFromInfo(info, {format: best_audio})
     let to_stream = fs.createWriteStream(output);
-    
+
     to_stream.addListener("close", () => {
       from_stream.destroy()
     });
@@ -72,7 +80,7 @@ async function download_music(url) {
 
         // Once the file has been downloaded completely, close the stream
         if(written/content_length === 1) {
-          let video_data_csv = [url, thumb.url, title, output];
+          let video_data_csv = [url, thumb.url, valid_title, output];
 
           fs.appendFileSync(downloads_csv_loc, video_data_csv.join(",") + "\n");
           to_stream.close()
@@ -291,13 +299,18 @@ ipcRenderer.on("import_playlist", (event, data) => {
     // Update the path so it stays consistent with user's computer
     // Extract file extension using regex and get new video_path
     let container = video[3].match(/\.[0-9a-z]+$/i)[0].substr(1)
-    let valid_file_name = `${video_title.replace(/[/\\?%*:|"<>]/g, '-')}.${container}`;
+
+    // Convert to csv
+    let valid_title = convert_to_csv(video_title);
+    let valid_file_name = `${valid_title}.${container}`;
+
+    // Get video path
     let video_path = path.resolve(path.join(download_location, valid_file_name));
-    
-    let download_info = [video_url, video_thumb, video_title, video_path];
-    
+
     // If user does not have the video in their downloads csv, but has the video downloaded
     // Then add the video to their downloads csv
+    let download_info = [video_url, video_thumb, valid_title, video_path];
+
     if(!get_download_info(video_url) && fs.existsSync(video_path)) {
       fs.appendFileSync(downloads_csv_loc, download_info.join(",") + "\n");
     }
