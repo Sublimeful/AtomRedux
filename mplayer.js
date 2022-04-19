@@ -10,6 +10,7 @@ const music_location = path.resolve(path.join(__dirname, "../", "Music"))
 const download_location = path.resolve(path.join(music_location, "Downloads"))
 const playlist_location = path.resolve(path.join(music_location, "Playlists"))
 const downloads_csv_loc = path.resolve(path.join(download_location, "Downloads.csv"))
+const csv_delimiter = '|'
 
 if(!fs.existsSync(music_location)) fs.mkdirSync(music_location)
 if(!fs.existsSync(download_location)) fs.mkdirSync(download_location)
@@ -22,7 +23,7 @@ let playlist = [];
 
 
 function convert_to_csv(string) {
-  return string.replace(/[/\\?%*:|"<>,]/g, '-');
+  return string.replace(/[/\\?%*:|"<>]/g, '-');
 }
 
 function get_download_info(video_url) {
@@ -40,7 +41,7 @@ function get_download_info(video_url) {
 
 function unpack_csv(loc_of_csv) {
   let data = fs.readFileSync(loc_of_csv, {encoding: "utf8", flag: "r"})
-  let unpacked = data.split("\n").filter(_ => _).map(_ => _.split(","));
+  let unpacked = data.split("\n").filter(_ => _).map(_ => _.split(csv_delimiter));
 
   return unpacked;
 }
@@ -82,7 +83,7 @@ async function download_music(url) {
         if(written/content_length === 1) {
           let video_data_csv = [url, thumb.url, valid_title, output];
 
-          fs.appendFileSync(downloads_csv_loc, video_data_csv.join(",") + "\n");
+          fs.appendFileSync(downloads_csv_loc, video_data_csv.join(csv_delimiter) + "\n");
           to_stream.close()
         }
 
@@ -107,7 +108,7 @@ function validate_downloads_csv() {
 
   for(let download of unique_downloads) {
     let path = download[3]
-    if(fs.existsSync(path)) fs.appendFileSync(downloads_csv_loc, download.join(",") + "\n");
+    if(fs.existsSync(path)) fs.appendFileSync(downloads_csv_loc, download.join(csv_delimiter) + "\n");
   }
 }
 
@@ -312,7 +313,7 @@ ipcRenderer.on("import_playlist", (event, data) => {
     let download_info = [video_url, video_thumb, valid_title, video_path];
 
     if(!get_download_info(video_url) && fs.existsSync(video_path)) {
-      fs.appendFileSync(downloads_csv_loc, download_info.join(",") + "\n");
+      fs.appendFileSync(downloads_csv_loc, download_info.join(csv_delimiter) + "\n");
     }
 
     add_playlist(download_info)
@@ -330,7 +331,7 @@ ipcRenderer.on("export_playlist", (event, data) => {
   fs.writeFileSync(path, '');
 
   for(let video of get_playlist()) {
-    fs.appendFileSync(path, video.join(",") + "\n");
+    fs.appendFileSync(path, video.join(csv_delimiter) + "\n");
   }
 })
 

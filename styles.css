@@ -272,7 +272,7 @@ html {
     #03ff9a
   );
   transition: width 0.1s linear;
-  border-radius: 0 5px 5px 0;
+  border-radius: inherit;
 }
 
 .progress-container {
@@ -283,6 +283,26 @@ html {
   border-radius: 0 5px 5px 0;
 }
 
+.volume {
+  cursor: pointer;
+  height: 0.5rem;
+  width: 100%;
+  background: linear-gradient(
+    45deg,
+    yellow,
+    red
+  );
+  transition: width 0.1s linear;
+  border-radius: inherit;
+}
+
+.volume-container {
+  cursor: pointer;
+  background-color: white;
+  width: 40%;
+  height: 0.5rem;
+  border-radius: 0 10px 0 0;
+}
 
 @keyframes scrolling-text {
   from {

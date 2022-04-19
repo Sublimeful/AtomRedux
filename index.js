@@ -1,5 +1,16 @@
 const ProgressBar = require('progressbar.js')
 const search_bar = document.querySelector("#search-bar")
+const volume_bar = document.querySelector("#volume-container")
+
+volume_bar.addEventListener("click", function(e) {
+  let audio_el = document.getElementById("song");
+  let volume_el = document.querySelector("#volume")
+  let width = this.clientWidth;
+  let click_x = e.offsetX;
+
+  audio_el.volume = click_x/width;
+  volume.style.width = `${click_x/width * 100}%`
+})
 
 search_bar.addEventListener("keyup", async function(event) {
   if(event.code === "Enter") {
