@@ -107,7 +107,11 @@ function start_player() {
 
     audio_el.addEventListener("ended", () => {
       let pause_btn = document.querySelector(".pause-btn")
+      let song_thumb_container = document.querySelector(".img-container")
+
+      // Set paused css
       pause_btn.querySelector("i").classList = "fa-solid fa-play"
+      song_thumb_container.classList.remove("play")
     })
   } catch(error) {
     throw error;

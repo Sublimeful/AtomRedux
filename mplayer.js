@@ -144,6 +144,7 @@ async function play_sound(info) {
   try {
     let audio_el = document.getElementById("song")
     let pause_btn = document.querySelector(".pause-btn")
+    let song_thumb_container = document.querySelector(".img-container")
 
     // Detach play_next so that when this sound ends,
     // it won't play the next song (facepalm)
@@ -166,7 +167,11 @@ async function play_sound(info) {
       });
     }
 
+    // Set play css
     pause_btn.querySelector("i").classList = "fa-solid fa-pause"
+    song_thumb_container.classList.add("play")
+
+    // Dispatch new track element
     audio_el.dispatchEvent(new CustomEvent("newtrack", {detail: info}))
   } catch(error) {
     throw error;
@@ -232,15 +237,22 @@ async function play_playlist_index(index) {
 async function toggle_pause() {
   let audio_el = document.getElementById("song")
   let pause_btn = document.querySelector(".pause-btn")
+  let song_thumb_container = document.querySelector(".img-container")
 
   // Check if audio is ready to play (4 = Can play)
   if(audio_el.readyState !== 4) return;
   
   if(!audio_el.paused) {
+    // Set paused css
     pause_btn.querySelector("i").classList = "fa-solid fa-play"
+    song_thumb_container.classList.remove("play")
+
     await audio_el.pause()
   } else {
+    // Set playing css
     pause_btn.querySelector("i").classList = "fa-solid fa-pause"
+    song_thumb_container.classList.add("play")
+
     await audio_el.play()
   }
 }
