@@ -171,7 +171,7 @@ async function play_sound(info) {
     pause_btn.querySelector("i").classList = "fa-solid fa-pause"
     song_thumb_container.classList.add("play")
 
-    // Dispatch new track element
+    // Dispatch new track event
     audio_el.dispatchEvent(new CustomEvent("newtrack", {detail: info}))
   } catch(error) {
     throw error;
