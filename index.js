@@ -153,7 +153,7 @@ async function download_btn_clicked(video_url, video_el) {
 
   video_el.appendChild(cancel_download_btn_spoiler);
 
-  const [event_el, write_stream] = await download_music(video_url);
+  const [event_el, write_stream] = await download_music(video_url, video_el.querySelector(".video-title").textContent);
 
   loader.remove()
 

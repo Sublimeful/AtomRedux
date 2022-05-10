@@ -51,9 +51,8 @@ function get_downloads_csv() {
   return unpack_csv(downloads_csv_loc).sort((a, b) => a[2].localeCompare(b[2]))
 }
 
-async function download_music(url) {
+async function download_music(url, video_title) {
   let info = await ytdl.getInfo(url);
-  let title = info.videoDetails.title;
   let formats = info.formats;
   let thumb = info.videoDetails.thumbnails[info.videoDetails.thumbnails.length - 1]
   try {
@@ -61,7 +60,7 @@ async function download_music(url) {
     let content_length = parseInt(best_audio.contentLength)
 
     // Convert to csv
-    let valid_title = convert_to_csv(title)
+    let valid_title = convert_to_csv(video_title)
     let valid_file_name = `${valid_title}.${best_audio.container}`;
 
     let output = path.resolve(path.join(download_location, valid_file_name));
