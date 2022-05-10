@@ -48,7 +48,7 @@ function unpack_csv(loc_of_csv) {
 
 function get_downloads_csv() {
   // Return downloads infos
-  return unpack_csv(downloads_csv_loc);
+  return unpack_csv(downloads_csv_loc).sort((a, b) => a[2].localeCompare(b[2]))
 }
 
 async function download_music(url) {

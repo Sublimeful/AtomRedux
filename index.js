@@ -481,6 +481,104 @@ function close_downloads() {
   document.getElementById("my-downloads").style.width = "0";
 }
 
+function string_similarity(str1, str2) {
+  let dp = []
+
+  let first_row = [0]
+  for(let i = 0; i < str1.length; i++) {
+    first_row.push(i + 1)
+  }
+  dp.push(first_row)
+
+  for(let i = 0; i < str2.length; i++) {
+    let row = []
+    row.push(i + 1)
+    for(let j = 0; j < str1.length; j++) {
+      row.push(0)
+    }
+    dp.push(row)
+  }
+
+  for(let i = 0; i < str2.length; i++) {
+    for(let j = 0; j < str1.length; j++) {
+      let di = i + 1
+      let dj = j + 1
+      if(str1[j] === str2[i]) {
+        dp[di][dj] = dp[di - 1][dj - 1]
+      } else {
+        dp[di][dj] = Math.min(dp[di - 1][dj - 1], dp[di - 1][dj], dp[di][dj - 1]) + 1
+      }
+    }
+  }
+
+  let edits_needed = dp[str2.length][str1.length]
+  let longer_length = Math.max(str1.length, str2.length)
+
+  return 1 - edits_needed / longer_length
+}
+
+function search_playlist() {
+  let playlist_el = document.getElementById("my-playlist")
+  let search_el = document.getElementById("search-playlist")
+  let items = playlist_el.querySelectorAll(".item")
+
+  let query = search_el.value.trim()
+  if(!query) {
+    for(let item of items) {
+      item.style.display = ""
+    }
+    return;
+  }
+
+  for(let item of items) {
+    let title = item.querySelector("h1").textContent
+    let max_sim = string_similarity(query.toLowerCase(), title.toLowerCase())
+    item.style.display = "none"
+
+    let words = title.split(" ")
+
+    for(let word of words) {
+      let sim = string_similarity(query.toLowerCase(), word.toLowerCase())
+      max_sim = Math.max(max_sim, sim)
+    }
+
+    if(max_sim > 0.4) {
+      item.style.display = ""
+    }
+  }
+}
+
+function search_downloads() {
+  let downloads_el = document.getElementById("my-downloads")
+  let search_el = document.getElementById("search-downloads")
+  let items = downloads_el.querySelectorAll(".item")
+
+  let query = search_el.value.trim()
+  if(!query) {
+    for(let item of items) {
+      item.style.display = ""
+    }
+    return;
+  }
+
+  for(let item of items) {
+    let title = item.querySelector("h1").textContent
+    let max_sim = string_similarity(query.toLowerCase(), title.toLowerCase())
+    item.style.display = "none"
+
+    let words = title.split(" ")
+
+    for(let word of words) {
+      let sim = string_similarity(query.toLowerCase(), word.toLowerCase())
+      max_sim = Math.max(max_sim, sim)
+    }
+
+    if(max_sim > 0.4) {
+      item.style.display = ""
+    }
+  }
+}
+
 render_downloads()
 start_player()
 

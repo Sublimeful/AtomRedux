@@ -25,7 +25,7 @@ body {
   justify-content: center;
 }
 
-.topnav input[type=text] {
+.search {
   padding: 6px;
   border: none;
   font-size: 17px;
@@ -33,7 +33,7 @@ body {
   color: white;
 }
 
-.topnav input[type=text]:focus {
+.search {
   outline: none;
 }
 

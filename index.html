@@ -10,7 +10,7 @@
     <div class="topnav">
       <button title="Open Playlist" class="navbtn" onclick="open_playlist()"><i class="fa-solid fa-music"></i></button>
       <button title="Open Downloads" class="navbtn" onclick="open_downloads()"><i class="fa-solid fa-download"></i></button>
-      <input id="search-bar" type="text" placeholder="Search..">
+      <input id="search-bar" class="search" type="text" placeholder="Search..">
       <button title="Search" class="navbtn" onclick="search()"><i class="fa-solid fa-magnifying-glass"></i></button>
       <button title="Download All" class="navbtn" onclick="download_all_undownloaded_btn_clicked(document.querySelector('#items.search-items'))"><i class="fa-solid fa-angles-down"></i></button>
     </div>
@@ -24,10 +24,12 @@
       <button title="Export Playlist" onclick="export_playlist()" class="action-btn" style="position: absolute; top: 8px; background-color: transparent; left: 8rem"><i class="fa-solid fa-file-export"></i></button>
       <button title="Download All" onclick="download_all_undownloaded_btn_clicked(this.parentNode)" class="action-btn" style="position: absolute; top: 8px; background-color: transparent; left: 12rem"><i class="fa-solid fa-download"></i></button>
       <button title="Clear Playlist" onclick="clear_playlist_btn_clicked()" class="action-btn" style="position: absolute; top: 8px; background-color: transparent; left: 16rem"><i class="fa-solid fa-ban"></i></button>
+      <input id="search-playlist" class="search" style="margin: 15px 15px 15px 15px;" type="text" placeholder="Search.." oninput="search_playlist()">
       <a title="Close Playlist" href="javascript:void(0)" class="closebtn" onclick="close_playlist()">&times;</a>
     </div>
     <div id="my-downloads" class="sidebar">
       <button title="Add All to Playlist" onclick="add_all_btn_clicked()" class="action-btn" style="position: absolute; top: 8px; background-color: transparent"><i class="fa-solid fa-angles-down"></i></button>
+      <input id="search-downloads" class="search" style="margin: 15px 15px 15px 15px;" type="text" placeholder="Search.." oninput="search_downloads()">
       <a title="Close Downloads" href="javascript:void(0)" class="closebtn" onclick="close_downloads()">&times;</a>
     </div>
     <div class="player-container">
