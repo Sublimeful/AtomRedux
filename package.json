@@ -1,6 +1,6 @@
 {
   "name": "AtomRedux",
-  "version": "2.0.7",
+  "version": "2.0.8",
   "description": "Music player / Youtube downloader",
   "main": "main.js",
   "scripts": {
