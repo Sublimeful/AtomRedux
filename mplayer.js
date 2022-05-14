@@ -23,7 +23,7 @@ let playlist = [];
 
 
 function convert_to_csv(string) {
-  return string.replace(/[/\\?%*:|"<>]/g, '-');
+  return string.replace(/[/\\?%*:|"<>#]/g, '-');
 }
 
 function get_download_info(video_url) {
