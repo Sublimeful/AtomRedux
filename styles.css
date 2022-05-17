@@ -439,8 +439,13 @@ html {
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: #000000;
+  background: red;
   border-radius: 10px;
+}
+
+/* Handle Hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #cf1111;
 }
 
 .action-btn[style*="background-color: transparent"] i {
